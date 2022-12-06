@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\PostCollection;
 use App\Models\Post;
+
 use Illuminate\Http\Request;
+use App\Http\Resources\V1\PostResource;
+use GuzzleHttp\Psr7\Response;
 
 class PostController extends Controller
 {
@@ -15,8 +19,9 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts=Post::all();
-        return response()->json(["result" => "ok", "posts"=>$posts], 201);
+         $posts=Post::all();
+         return response()->json([new PostCollection(Post::all())], 200);
+        //return new PostCollection(Post::all());
     }
 
     /**
@@ -27,7 +32,15 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $post= new Post($request->all());
+
+
+        $path=$request->image->store('public/posts');
+        $post->image=$path;
+
+
+        $post->save();
+        return Response()->json(new PostResource($post),status:200);
     }
 
     /**
@@ -38,7 +51,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return $post;
+        return new PostResource($post);
     }
 
     /**
@@ -48,9 +61,18 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $post)
     {
-        //
+        $postUpdate=Post::find($post);
+        $path=$request->image->store('public/posts');
+        $postUpdate->image=$path;
+        $postUpdate->name=$request->name;
+        $postUpdate->description=$request->description;
+        $postUpdate->price=$request->price;
+        $postUpdate->numTicket=$request->numTicket;
+        $postUpdate->dateGame=$request->dateGame;
+        $postUpdate->save();
+        return Response()->json(new PostResource($postUpdate),status:200);
     }
 
     /**

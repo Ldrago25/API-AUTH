@@ -15,11 +15,14 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->string('title');
-            $table->string('slug')->unique();
-            $table->text('content');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->string('image');
+            //$table->unsignedBigInteger('user_id');
+            $table->string('name');
+            $table->string('description');
+            $table->integer('numTicket');
+            $table->string('price');
+            $table->string('dateGame');
+           // $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }
