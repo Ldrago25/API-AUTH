@@ -8,7 +8,7 @@ use App\Models\Post;
 
 use Illuminate\Http\Request;
 use App\Http\Resources\V1\PostResource;
-use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -19,8 +19,8 @@ class PostController extends Controller
      */
     public function index()
     {
-         $posts=Post::all();
-         return response()->json([new PostCollection(Post::all())], 200);
+        $posts = Post::all();
+        return response()->json([new PostCollection(Post::all())], 200);
         //return new PostCollection(Post::all());
     }
 
@@ -33,14 +33,16 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $post= new Post($request->all());
-
-
-        $path=$request->image->store('public/posts');
-        $post->image=$path;
-
+        $array=[];
+        foreach($request->image as $itemFile){
+            $path=$itemFile->store('public/posts');
+            $post->image= Storage::url($path);
+            array_push($array,'asdasdasdasda');
+        }
 
         $post->save();
-        return Response()->json(new PostResource($post),status:200);
+        return Response()->json(data:$array,status:200);
+
     }
 
     /**
@@ -63,16 +65,16 @@ class PostController extends Controller
      */
     public function update(Request $request, $post)
     {
-        $postUpdate=Post::find($post);
-        $path=$request->image->store('public/posts');
-        $postUpdate->image=$path;
-        $postUpdate->name=$request->name;
-        $postUpdate->description=$request->description;
-        $postUpdate->price=$request->price;
-        $postUpdate->numTicket=$request->numTicket;
-        $postUpdate->dateGame=$request->dateGame;
+        $postUpdate = Post::find($post);
+        $path = $request->image->store('public/posts');
+        $postUpdate->image = $path;
+        $postUpdate->name = $request->name;
+        $postUpdate->description = $request->description;
+        $postUpdate->price = $request->price;
+        $postUpdate->numTicket = $request->numTicket;
+        $postUpdate->dateGame = $request->dateGame;
         $postUpdate->save();
-        return Response()->json(new PostResource($postUpdate),status:200);
+        return Response()->json(new PostResource($postUpdate), status: 200);
     }
 
     /**
