@@ -8,6 +8,7 @@ use App\Models\Post;
 
 use Illuminate\Http\Request;
 use App\Http\Resources\V1\PostResource;
+use App\Models\Raffle;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -20,8 +21,7 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::all();
-        return response()->json([new PostCollection(Post::all())], 200);
-        //return new PostCollection(Post::all());
+        return new PostCollection(Post::all());
     }
 
     /**
@@ -33,15 +33,20 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $post= new Post($request->all());
-        $array=[];
         foreach($request->image as $itemFile){
             $path=$itemFile->store('public/posts');
             $post->image= Storage::url($path);
-            array_push($array,'asdasdasdasda');
+
+        }
+        $post->save();
+
+        foreach($request->image as $itemFile){
+            $path=$itemFile->store('public/posts');
+            $pathInsert=Storage::url($path);
+            Raffle::create(['post_id'=>$post->id,'path'=>$pathInsert]);
         }
 
-        $post->save();
-        return Response()->json(data:$array,status:200);
+        return Response()->json(new PostResource($post),status:200);
 
     }
 

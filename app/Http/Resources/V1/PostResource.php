@@ -21,7 +21,7 @@ class PostResource extends JsonResource
             'numTicket'=> $this->numTicket,
             'price'=> $this->price,
             'dateGame'=>$this->dateGame,
-            'image'=>$this->image
+            'images'=>$this->raffles
             /*'author'=>[
                 'name'=>$this->user->name,
                 'email'=>$this->user->email
