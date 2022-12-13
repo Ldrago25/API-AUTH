@@ -113,7 +113,7 @@ class PostController extends Controller
             }
         }
 
-        if(is_array($request->deleteIds)){
+        if(is_array($request->deleteIds) && !isEmpty($request->deleteIds)){
             foreach($request->deleteIds as $delete){
                 $data=Raffle::find($delete);
                 $path=$data->path;
@@ -122,7 +122,7 @@ class PostController extends Controller
                 Raffle::destroy($delete);
 
             }
-        }else{
+        }else if (!isEmpty($request->deleteIds)){
             $data=Raffle::find($request->deleteIds);
             $path=$data->path;
             $pathDelete=str_replace('storage','public',$path);
